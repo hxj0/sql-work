@@ -5,3 +5,5 @@ book/.gitignore
 *.iml
 book-vue/dist
 book-vue/node_modules
+book-vue/.git
+
