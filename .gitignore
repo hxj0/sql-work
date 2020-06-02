@@ -1,0 +1,7 @@
+.idea
+book/.mvn
+book/target
+book/.gitignore
+*.iml
+book-vue/dist
+book-vue/node_modules
