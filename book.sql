@@ -34,7 +34,7 @@ CREATE TABLE `book` (
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Records of book
+-- Records of books
 -- ----------------------------
 INSERT INTO `book` VALUES ('1', '三体', '刘慈欣', '4', '10', '30', '讲述了地球人类文明和三体文明的信息交流、生死搏杀及两个文明在宇宙中的兴衰历程。');
 INSERT INTO `book` VALUES ('2', '流浪地球', '刘慈欣', '3', '11', '30', '为了自救,人类提出一个名为“流浪地球”的大胆计划');
@@ -101,7 +101,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
--- Records of user
+-- Records of users
 -- ----------------------------
 INSERT INTO `user` VALUES ('1', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '110290@qq.com', 'root', '1');
 INSERT INTO `user` VALUES ('2', 'user', '827ccb0eea8a706c4c34a16891f84e7b', '12345@qq.com', 'user', '1');
@@ -114,3 +114,4 @@ CREATE TRIGGER `delete_trigger` BEFORE DELETE ON `book` FOR EACH ROW BEGIN
  END
 ;;
 DELIMITER ;
+
