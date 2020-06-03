@@ -4,5 +4,16 @@
 
     <select id="getAllBooks" resultType="com.hxj.book.entity.BookDTO">
         select b.id, b.name, b.author, c.name category, b.count, b.price, b.introduction from book b left join category c on b.category_id = c.id
+        where (b.name like #{search} or b.author like #{search})
+        <if test="typeId!=null">
+            and c.id = #{typeId}
+        </if>
+        limit #{page},#{limit}
+    </select>
+    <select id="getTotal" resultType="java.lang.Integer">
+        select count(*) from book where (name like #{search} or author like #{search})
+        <if test="typeId!=null">
+            and category_id = #{typeId}
+        </if>
     </select>
 </mapper>

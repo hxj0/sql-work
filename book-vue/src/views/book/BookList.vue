@@ -22,16 +22,26 @@
                     </tr>
                 </table>
             </div>
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer">
                 <el-button @click="canceldoAddLog">取 消</el-button>
                 <el-button type="primary" @click="doAddLog">确 定</el-button>
             </span>
         </el-dialog>
+        <el-form :inline="true">
+            <el-form-item>
+                <el-input v-model="search" placeholder="按名称或者作者搜索..."/>
+            </el-form-item>
+
+            <el-form-item>
+                <el-select v-model="typeId" clearable placeholder="类别">
+                    <el-option v-for="item in categorys" :value="item.id" :label="item.name"/>
+                </el-select>
+            </el-form-item>
+            <el-button type="primary" icon="el-icon-search" @click="init()">查询</el-button>
+            <el-button type="default" @click="resetData()">清空</el-button>
+        </el-form>
         <el-table
-                :data="tableData.filter(data => !search ||
-                data.name.toLowerCase().includes(search.toLowerCase()) ||
-                data.author.toLowerCase().includes(search.toLowerCase()) ||
-                data.category.toLowerCase().includes(search.toLowerCase()))"
+                :data="tableData"
                 style="width: 100%">
             <el-table-column
                     label="名称"
@@ -62,10 +72,7 @@
                     align="right"
                     width="300px">
                 <template slot="header" slot-scope="scope">
-                    <el-input
-                            v-model="search"
-                            size="mini"
-                            placeholder="输入关键字搜索"/>
+                    <span>操作</span>
                 </template>
                 <template slot-scope="scope">
                     <el-button
@@ -87,16 +94,31 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <el-pagination
+                :current-page.sync="page"
+                :page-size="limit"
+                :total="total"
+                style="padding: 30px 0; text-align: center;"
+                layout="total, prev, pager, next, jumper"
+                @current-change="init"
+        />
     </div>
 </template>
 
 <script>
     export default {
         created() {
+            this.$axios.get("/book/category/getall").then(res => {
+                this.categorys = res.data
+            });
             this.init()
         },
         data() {
             return {
+                page: 1,
+                limit: 2,
+                total:0,
                 dialogVisible: false,
                 tableData: [{
                     id:'',
@@ -110,14 +132,21 @@
                 search: '',
                 bookname:'',
                 username:'',
-                bookId:''
+                bookId:'',
+                typeId:'',
+                categorys:''
             }
         },
         methods: {
+            resetData(){
+              this.typeId = ''
+              this.search = ''
+            },
             init(){
-                this.$axios.get('/book/booklist').then(res=>{
+                this.$axios.get(`/book/booklist/${this.page}/${this.limit}?search=${this.search}&typeId=${this.typeId}`).then(res=>{
                     // console.log(res.data);
-                    this.tableData = res.data;
+                    this.tableData = res.data.data;
+                    this.total = res.data.total
                 }).catch(e=>{
                     console.log(e);
                 })

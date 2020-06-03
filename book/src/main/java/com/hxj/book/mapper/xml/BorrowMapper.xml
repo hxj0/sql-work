@@ -8,7 +8,8 @@
         );
     </insert>
     <update id="recive">
-        update borrow set return_date=now() where user_id=#{userId} and book_id=#{bookId}
+        update borrow set return_date=now() where user_id=#{userId} and book_id=#{bookId};
+        update book set count=count+1 where id=#{bookId};
     </update>
     <delete id="deleteLog">
         delete from borrow where user_id=#{userId} and book_id=#{bookId}

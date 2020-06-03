@@ -16,6 +16,7 @@ import java.util.ArrayList;
  */
 public interface BookService extends IService<Book> {
 
-    ArrayList<BookDTO> getAllBooks();
+    ArrayList<BookDTO> getAllBooks(String search, Integer typeId, Integer page, Integer limit);
 
+    Integer getTotal(String search, Integer typeId);
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -26,10 +27,18 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @GetMapping("booklist")
-    public R getAll(){
-        ArrayList<BookDTO> bookDTOSs = bookService.getAllBooks();
-        return R.ok(bookDTOSs);
+    @GetMapping("booklist/{page}/{limit}")
+    public R getAll(@RequestParam(required = false, defaultValue = "") String search,
+                    @RequestParam(required = false) Integer typeId,
+                    @PathVariable("page") Integer page,
+                    @PathVariable("limit") Integer limit){
+        search = "%"+search+"%";
+        ArrayList<BookDTO> bookDTOSs = bookService.getAllBooks(search, typeId, page, limit);
+        Integer pageCount = bookService.getTotal(search, typeId);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("data", bookDTOSs);
+        map.put("total", pageCount);
+        return R.ok(map);
     }
 
     @GetMapping("/{id}")

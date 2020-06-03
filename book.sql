@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50727
 File Encoding         : 65001
 
-Date: 2020-06-02 13:23:50
+Date: 2020-06-03 09:47:59
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -21,23 +21,27 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `book`;
 CREATE TABLE `book` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) DEFAULT NULL,
-  `author` varchar(20) DEFAULT NULL,
+  `name` varchar(20) NOT NULL,
+  `author` varchar(20) NOT NULL,
   `category_id` int(11) DEFAULT NULL,
-  `count` int(11) DEFAULT NULL,
-  `price` double DEFAULT NULL,
+  `count` int(11) NOT NULL,
+  `price` double NOT NULL,
   `introduction` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `category` (`category_id`),
   CONSTRAINT `book_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of book
 -- ----------------------------
-INSERT INTO `book` VALUES ('1', '三体', '刘慈欣', '2', '12', '30', '讲述了地球人类文明和三体文明的信息交流、生死搏杀及两个文明在宇宙中的兴衰历程。');
-INSERT INTO `book` VALUES ('13', '白夜行', '东野圭吾', '2', '4', '30', '世界上有两种东西不能直视，一是太阳，一是人心。');
+INSERT INTO `book` VALUES ('1', '三体', '刘慈欣', '4', '10', '30', '讲述了地球人类文明和三体文明的信息交流、生死搏杀及两个文明在宇宙中的兴衰历程。');
+INSERT INTO `book` VALUES ('2', '流浪地球', '刘慈欣', '3', '11', '30', '为了自救,人类提出一个名为“流浪地球”的大胆计划');
+INSERT INTO `book` VALUES ('3', '放学后', '东野圭吾', '5', '4', '30', '世界上有两种东西不能直视，一是太阳，一是人心。');
+INSERT INTO `book` VALUES ('4', '球状闪电', '刘慈欣', '2', '11', '30', '历经球状闪电的男主角对其历尽艰辛的研究历程，向我们展现了一个独特、神秘而离奇的世界');
+INSERT INTO `book` VALUES ('5', '红手指', '东野圭吾', '6', '1', '30', '以一个女童的离奇身亡展开情节，逐渐走入诸多社会问题的背后，当抽丝剥茧拨开案件迷雾的最后，只剩下一个令人心碎的悲凉救赎……');
+INSERT INTO `book` VALUES ('13', '白夜行', '东野圭吾', '1', '3', '30', '世界上有两种东西不能直视，一是太阳，一是人心。');
 
 -- ----------------------------
 -- Table structure for borrow
@@ -57,7 +61,10 @@ CREATE TABLE `borrow` (
 -- ----------------------------
 -- Records of borrow
 -- ----------------------------
-INSERT INTO `borrow` VALUES ('1', '13', '2020-06-02', '2020-06-02');
+INSERT INTO `borrow` VALUES ('1', '1', '2020-06-03', '2020-06-03');
+INSERT INTO `borrow` VALUES ('1', '13', '2020-06-02', '2020-06-03');
+INSERT INTO `borrow` VALUES ('1', '13', '2020-06-03', '2020-06-03');
+INSERT INTO `borrow` VALUES ('4', '5', '2020-06-03', '2020-06-03');
 
 -- ----------------------------
 -- Table structure for category
@@ -85,21 +92,21 @@ INSERT INTO `category` VALUES ('6', '新闻');
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(20) DEFAULT NULL,
+  `username` varchar(20) NOT NULL,
   `password` varchar(32) NOT NULL,
-  `email` varchar(30) DEFAULT NULL,
+  `email` varchar(30) NOT NULL,
   `role` enum('root','admin','user') DEFAULT 'user',
   `is_enabled` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '1@qq.com', 'root', '1');
-INSERT INTO `user` VALUES ('2', 'user', '827ccb0eea8a706c4c34a16891f84e7b', '12345@qq.com', 'root', '1');
-INSERT INTO `user` VALUES ('4', 'hxj', 'e10adc3949ba59abbe56e057f20f883e', '1102907885@qq.com', 'user', '1');
-INSERT INTO `user` VALUES ('5', 'hp', '202cb962ac59075b964b07152d234b70', '1@123', 'root', '1');
+INSERT INTO `user` VALUES ('1', 'admin', 'e10adc3949ba59abbe56e057f20f883e', '110290@qq.com', 'root', '1');
+INSERT INTO `user` VALUES ('2', 'user', '827ccb0eea8a706c4c34a16891f84e7b', '12345@qq.com', 'user', '1');
+INSERT INTO `user` VALUES ('4', 'hxj', 'e10adc3949ba59abbe56e057f20f883e', '1102907885@qq.com', 'admin', '1');
+INSERT INTO `user` VALUES ('5', 'hp', '202cb962ac59075b964b07152d234b70', '1@123', 'user', '1');
 DROP TRIGGER IF EXISTS `delete_trigger`;
 DELIMITER ;;
 CREATE TRIGGER `delete_trigger` BEFORE DELETE ON `book` FOR EACH ROW BEGIN
