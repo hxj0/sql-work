@@ -34,6 +34,8 @@ public class Book implements Serializable {
 
     private String author;
 
+    private String cover;
+
     private Integer categoryId;
 
     private Integer count;

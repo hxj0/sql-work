@@ -39,6 +39,17 @@ axios.interceptors.response.use(success => {
     }
 })
 
+router.beforeEach((to, from, next) => {
+    if (to.path === '/') {
+        next();
+    } else {
+        if (window.sessionStorage.getItem("user")) {
+            next();
+        } else {
+            next('/?redirect=' + to.path);
+        }
+    }
+})
 
 new Vue({
   router,

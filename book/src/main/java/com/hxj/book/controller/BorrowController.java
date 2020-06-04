@@ -12,6 +12,7 @@ import com.hxj.book.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -36,15 +37,17 @@ public class BorrowController {
     private UserService userService;
 
     @GetMapping("all")
-    public R getAllLogs(){
-        List<Log> logs = borrowService.getAllLogs();
+    public R getAllLogs(HttpSession session, @RequestParam String username){
+        String role = (String)session.getAttribute("user_role");
+        List<Log> logs = borrowService.getAllLogs(username,role);
         return R.ok(logs);
     }
 
     @DeleteMapping("/delete/{bookId}/{userId}")
     public R deleteLog(@PathVariable("bookId") Integer bookId,
-                       @PathVariable("userId") Integer userId){
-        Boolean delete = borrowService.deleteLog(bookId, userId);
+                       @PathVariable("userId") Integer userId,
+                       @RequestParam String borrowDate){
+        Boolean delete = borrowService.deleteLog(bookId, userId, borrowDate);
         return R.ok(delete).setMsg("删除日志成功！");
     }
 

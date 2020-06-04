@@ -4,9 +4,13 @@
             <el-button
                     icon="el-icon-plus"
                     type="success"
+                    v-if="$store.state.role !== 'user'"
                     @click="exportTable">导出数据</el-button>
         </el-form>
         <el-table id="table-borrow-data"
+                  :header-cell-style="thStyleFun"
+                  :cell-style="cellStyleFun"
+                  :default-sort = "{prop: 'borrowDate', order: ''}"
                   :data="tableData.filter(data => !search ||
                 data.username.toLowerCase().includes(search.toLowerCase()) ||
                 data.bookname.toLowerCase().includes(search.toLowerCase()) ||
@@ -23,10 +27,12 @@
             </el-table-column>
             <el-table-column
                     label="借阅日期"
+                    sortable
                     prop="borrowDate">
             </el-table-column>
             <el-table-column
                     label="归还日期"
+                    sortable
                     prop="returnDate">
             </el-table-column>
             <el-table-column
@@ -49,6 +55,7 @@
                             size="mini"
                             type="danger"
                             icon="el-icon-delete"
+                            v-show="$store.state.role !== 'user'"
                             @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
@@ -77,8 +84,14 @@
             }
         },
         methods: {
+            thStyleFun() {
+                return 'text-align:center'
+            },
+            cellStyleFun() {
+                return 'text-align:center'
+            },
             init(){
-                this.$axios.get('/book/borrow/all').then(res=>{
+                this.$axios.get('/book/borrow/all?username='+this.$store.state.username).then(res=>{
                     // console.log(res.data);
                     this.tableData = res.data;
                     console.log(this.tableData);
@@ -89,7 +102,8 @@
             handleRecive(log){
                 this.$axios.post('/book/borrow/recive',{
                     bookId:log.bookId,
-                    userId:log.userId
+                    userId:log.userId,
+                    borrowDate:log.borrowDate
                 }).then(res=>{
                     this.init()
                 })
@@ -99,7 +113,7 @@
                     cancelButtonText: '取消',
                     confirmButtonText: '确定'
                 }).then(() => {
-                    this.$axios.delete(`/book/borrow/delete/${log.bookId}/${log.userId}`).then(res=>{
+                    this.$axios.delete(`/book/borrow/delete/${log.bookId}/${log.userId}?borrowDate=${log.borrowDate}`).then(res=>{
                         this.init()
                     }).catch(e=>{
                         console.log(e);

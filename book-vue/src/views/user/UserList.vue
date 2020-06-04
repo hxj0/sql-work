@@ -22,6 +22,14 @@
                     label="角色"
                     width="180">
             </el-table-column>
+            <el-table-column label="编辑用户"
+                             width="100px">
+                <template slot-scope="scope">
+                    <el-button
+                            size="mini" type="text" icon="el-icon-edit"
+                            @click="handleEdit(scope.row)">编辑</el-button>
+                </template>
+            </el-table-column>
             <el-table-column label="是否禁用"
                     width="100px"
                     prop="isEnabled">
@@ -32,12 +40,17 @@
                             @click="handleDisabledOrEnabled(scope.row)">{{scope.row.isEnabled?'启用':'禁用'}}</el-button>
                 </template>
             </el-table-column>
-            <el-table-column label="编辑用户"
-                             width="100px">
+            <el-table-column label="删除用户"
+                             width="100px"
+                            v-if="$store.state.role!=='user'">
                 <template slot-scope="scope">
                     <el-button
-                               size="mini" type="text" icon="el-icon-edit"
-                               @click="handleEdit(scope.row)">编辑</el-button>
+                            size="mini"
+                            type="danger"
+                            icon="el-icon-delete"
+                            v-if="!(scope.row.role==='root'
+                                      || $store.state.role ===scope.row.role)"
+                            @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -81,6 +94,20 @@
             },
             handleEdit(user){
                 this.$router.replace('/adduser?userId='+user.id)
+            },
+            handleDelete(user){
+                this.$confirm('此操作将删除用户-' + user.username + '，是否继续？', '提示', {
+                    cancelButtonText: '取消',
+                    confirmButtonText: '确定'
+                }).then(() => {
+                    this.$axios.delete("/book/user/delete/"+user.id).then(res=>{
+                        this.init()
+                    }).catch(e=>{
+                        console.log(e);
+                    })
+                }).catch(() => {
+                    this.$message.info("取消删除!");
+                })
             }
         }
     }

@@ -16,7 +16,10 @@
             password=#{password},
         </if>
         <if test="email!=null">
-            email=#{email}
+            email=#{email},
+        </if>
+        <if test="role!=null">
+            role=#{role}
         </if>
         where id=#{id}
     </update>

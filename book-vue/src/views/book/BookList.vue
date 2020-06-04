@@ -41,7 +41,10 @@
             <el-button type="default" @click="resetData()">清空</el-button>
         </el-form>
         <el-table
+                :header-cell-style="thStyleFun"
+                :cell-style="cellStyleFun"
                 :data="tableData"
+                :default-sort = "{prop: 'price', order: ''}"
                 style="width: 100%">
             <el-table-column
                     label="名称"
@@ -51,6 +54,14 @@
                     label="作者"
                     prop="author">
             </el-table-column>
+
+            <el-table-column
+                    label="封面"
+                    prop="cover">
+                <template slot-scope="scope" >
+                    <el-image style="height: 100%" :src="scope.row.cover"></el-image>
+                </template>
+            </el-table-column>
             <el-table-column
                     label="类别"
                     prop="category">
@@ -59,13 +70,16 @@
                     label="简介"
                     prop="introduction">
             </el-table-column>
+
             <el-table-column
                     label="剩余/本"
+                    sortable
                     prop="count">
             </el-table-column>
 
             <el-table-column
                     label="价格/元"
+                    sortable
                     prop="price">
             </el-table-column>
             <el-table-column
@@ -85,22 +99,26 @@
                             size="mini"
                             type="primary"
                             icon="el-icon-edit"
+                            v-show="$store.state.role !== 'user'"
                             @click="handleEdit(scope.row)">编辑</el-button>
                     <el-button
                             size="mini"
                             type="danger"
                             icon="el-icon-delete"
+                            v-show="$store.state.role !== 'user'"
                             @click="handleDelete(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <!-- 分页 -->
         <el-pagination
+                @size-change="handleSizeChange"
                 :current-page.sync="page"
                 :page-size="limit"
                 :total="total"
+                :page-sizes="[2,3, 5, 7, 10]"
                 style="padding: 30px 0; text-align: center;"
-                layout="total, prev, pager, next, jumper"
+                layout="total, sizes, prev, pager, next, jumper"
                 @current-change="init"
         />
     </div>
@@ -117,7 +135,7 @@
         data() {
             return {
                 page: 1,
-                limit: 2,
+                limit: 3,
                 total:0,
                 dialogVisible: false,
                 tableData: [{
@@ -127,26 +145,41 @@
                     category: '',
                     introduction:'',
                     count:'',
-                    price:''
+                    price:'',
+                    cover:''
                 }],
                 search: '',
                 bookname:'',
                 username:'',
                 bookId:'',
                 typeId:'',
-                categorys:''
+                categorys:'',
             }
         },
         methods: {
+            thStyleFun() {
+                return 'text-align:center'
+            },
+            cellStyleFun() {
+                return 'text-align:center'
+            },
+            handleSizeChange(newSize){
+                let newTotal = this.total%newSize===0?this.total/newSize:Math.floor(this.total/newSize)+1;
+                this.page = this.page<=newTotal?this.page:newTotal;
+                this.limit = newSize
+                // console.log(newSize);
+                this.init()
+            },
             resetData(){
-              this.typeId = ''
-              this.search = ''
+                this.typeId = ''
+                this.search = ''
+                this.init()
             },
             init(){
                 this.$axios.get(`/book/booklist/${this.page}/${this.limit}?search=${this.search}&typeId=${this.typeId}`).then(res=>{
-                    // console.log(res.data);
-                    this.tableData = res.data.data;
+                    // console.log(res.data.data);
                     this.total = res.data.total
+                    this.tableData = res.data.data
                 }).catch(e=>{
                     console.log(e);
                 })
@@ -163,6 +196,11 @@
                 this.bookId = book.id;
             },
             doAddLog(){
+                if(this.$store.state.role === 'user'
+                && this.username !== this.$store.state.username){
+                    this.$alert(this.$store.state.username+"只能为自己借书！")
+                    return
+                }
                 this.$axios.put('/book/borrow/addBorrowLog',{
                     bookId:this.bookId,
                     username:this.username
@@ -182,6 +220,7 @@
                     confirmButtonText: '确定'
                 }).then(() => {
                     this.$axios.delete("/book/delete/"+book.id).then(res=>{
+                        if (this.total%this.limit === 1)this.page--;
                         this.init()
                     }).catch(e=>{
                         console.log(e);

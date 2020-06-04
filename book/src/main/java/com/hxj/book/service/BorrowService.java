@@ -16,9 +16,9 @@ import java.util.List;
  */
 public interface BorrowService extends IService<Borrow> {
 
-    List<Log> getAllLogs();
+    List<Log> getAllLogs(String username, String role);
 
-    Boolean deleteLog(Integer bookId, Integer userId);
+    Boolean deleteLog(Integer bookId, Integer userId, String borrowDate);
 
     Boolean addBorrowLog(Integer bookId, String username);
 

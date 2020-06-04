@@ -1,6 +1,7 @@
 package com.hxj.book.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hxj.book.entity.User;
 import com.hxj.book.service.UserService;
 import com.hxj.book.utils.MD5Util;
@@ -34,8 +35,19 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/all")
-    public R getAllUsers(){
-        List<User> users = userService.list();
+    public R getAllUsers(HttpSession session){
+        String role = (String) session.getAttribute("user_role");
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        if ("admin".equals(role)){
+            wrapper.ne("role","root");
+            wrapper.ne("role","admin");
+            wrapper.or().eq("username",(String) session.getAttribute("username"));
+        }else if ("user".equals(role)){
+            wrapper.ne("role","root");
+            wrapper.ne("role","admin");
+            wrapper.ne("role","user");
+        }
+        List<User> users = userService.list(wrapper);
         return R.ok(users);
     }
 
@@ -60,6 +72,9 @@ public class UserController {
     @PutMapping("/add")
     public R addUser(@RequestBody User user){
         user.setPassword(MD5Util.code(user.getPassword()));
+        if (!user.getEmail().contains("@")){
+            return R.fail("邮箱格式不正确！");
+        }
         boolean save = userService.save(user);
         return R.ok(save).setMsg("添加用户成功！");
     }
@@ -88,8 +103,12 @@ public class UserController {
                 map.get("username"), MD5Util.code(map.get("password")));
         if(user == null){
             return R.fail("用户名或密码错误！");
+        }else if(!user.getIsEnabled()){
+            return R.fail("该用户被禁用！");
         }
+        request.getSession().setAttribute("user_role", user.getRole());
         request.getSession().setAttribute("username", user.getUsername());
+        user.setPassword(null);
         return R.ok(user).setMsg("登录成功！");
     }
 
@@ -103,7 +122,15 @@ public class UserController {
         VerificationCode.output(image,resp.getOutputStream());
     }
 
-
+    @DeleteMapping("/delete/{userId}")
+    public R deleteUserById(HttpSession session, @PathVariable("userId") Integer userId){
+        String role = (String) session.getAttribute("user_role");
+        if(!"root".equals(role)){
+            return R.fail("没有删除权限！");
+        }
+        userService.removeById(userId);
+        return R.ok("").setMsg("删除成功！");
+    }
 
 }
 

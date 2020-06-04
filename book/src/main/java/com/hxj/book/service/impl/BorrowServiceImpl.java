@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -27,13 +28,13 @@ public class BorrowServiceImpl extends ServiceImpl<BorrowMapper, Borrow> impleme
     private BorrowMapper borrowMapper;
 
     @Override
-    public List<Log> getAllLogs() {
-        return borrowMapper.getAllLogs();
+    public List<Log> getAllLogs(String username, String role) {
+        return borrowMapper.getAllLogs(username, role);
     }
 
     @Override
-    public Boolean deleteLog(Integer bookId, Integer userId) {
-        return borrowMapper.deleteLog(bookId, userId);
+    public Boolean deleteLog(Integer bookId, Integer userId, String borrowDate) {
+        return borrowMapper.deleteLog(bookId, userId, borrowDate);
     }
 
     @Override
@@ -43,7 +44,9 @@ public class BorrowServiceImpl extends ServiceImpl<BorrowMapper, Borrow> impleme
 
     @Override
     public Boolean recive(Borrow borrow) {
-        return borrowMapper.recive(borrow);
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(borrow.getBorrowDate());
+    System.out.println(date);
+        return borrowMapper.recive(borrow,date);
     }
 
     @Override

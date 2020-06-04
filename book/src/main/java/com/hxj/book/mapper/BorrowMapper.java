@@ -17,13 +17,13 @@ import java.util.List;
  */
 public interface BorrowMapper extends BaseMapper<Borrow> {
 
-    List<Log> getAllLogs();
+    List<Log> getAllLogs(@Param("username")String username, @Param("role")String role);
 
-    Boolean deleteLog(@Param("bookId") Integer bookId, @Param("userId")Integer userId);
+    Boolean deleteLog(@Param("bookId") Integer bookId, @Param("userId") Integer userId, @Param("borrowDate")String borrowDate);
 
     Boolean addBorrowLog(@Param("bookId") Integer bookId, @Param("username") String username);
 
-    Boolean recive(Borrow borrow);
+    Boolean recive(@Param("borrow")Borrow borrow, @Param("date") String date);
 
     Integer getLogByBookIdAndUserName(@Param("bookId")Integer bookId, @Param("username") String username);
 }

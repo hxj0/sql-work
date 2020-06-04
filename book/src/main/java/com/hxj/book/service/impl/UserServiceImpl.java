@@ -44,6 +44,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(StringUtils.isBlank(user.getEmail())){
             user.setEmail(null);
         }
+        if(StringUtils.isBlank(user.getRole())){
+            user.setRole(null);
+        }
         return userMapper.updateUserById(user);
     }
 

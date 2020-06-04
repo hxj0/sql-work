@@ -8,11 +8,12 @@
         );
     </insert>
     <update id="recive">
-        update borrow set return_date=now() where user_id=#{userId} and book_id=#{bookId};
-        update book set count=count+1 where id=#{bookId};
+        update borrow set return_date=now() where user_id=#{borrow.userId} and book_id=#{borrow.bookId} and borrow_date=#{date};
+        update book set count=count+1 where id=#{borrow.bookId};
     </update>
     <delete id="deleteLog">
         delete from borrow where user_id=#{userId} and book_id=#{bookId}
+        and borrow_date=#{borrowDate}
     </delete>
 
     <select id="getAllLogs" resultType="com.hxj.book.entity.Log">
@@ -20,6 +21,12 @@
         Bw.return_date returnDate, u.username username, b.name bookname from
         borrow Bw left join book b on Bw.book_id=b.id left join user u on
         Bw.user_id=u.id
+        <if test="role=='user'">
+            where username=#{username}
+        </if>
+<!--        <if test="role=='admin'">-->
+<!--            where u.role != 'root'-->
+<!--        </if>-->
     </select>
     <select id="getLogByBookIdAndUserName" resultType="java.lang.Integer">
         select user_id from borrow where book_id=#{bookId} and

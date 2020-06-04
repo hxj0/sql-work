@@ -16,6 +16,8 @@ public class BookDTO implements Serializable {
 
     private String author;
 
+    private String cover;
+
     private String category;
 
     private Integer count;

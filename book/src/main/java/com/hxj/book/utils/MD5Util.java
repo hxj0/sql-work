@@ -39,7 +39,7 @@ public class MD5Util {
 
 
     public static void main(String[] args) {
-    //        System.out.println(code("123456"));
-    System.out.println("e10adc3949ba59abbe56e057f20f883e".length());
+            System.out.println(code("123"));
+//    System.out.println("e10adc3949ba59abbe56e057f20f883e".length());
     }
 }

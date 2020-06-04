@@ -30,7 +30,6 @@
 </template>
 
 <script>
-
     export default {
         name: "Login",
         data() {
@@ -62,6 +61,99 @@
                             this.loading = false;
                             if (resp.code === 20000) {
                                 window.sessionStorage.setItem("user", JSON.stringify(resp.data));
+                                let routers = []
+                                if(resp.data.role ==='root' || resp.data.role ==='admin'){
+                                    routers = [
+                                        {
+                                            path: '/home',
+                                            name: '图书',
+                                            show:true,
+                                            class:'el-icon-notebook-2',
+                                            component: ()=>import('./Home'),
+                                            children:[
+                                                {
+                                                    path:'/booklist',
+                                                    name:'图书列表',
+                                                    component:()=>import('./book/BookList')
+                                                },
+                                                {
+                                                    path:'/addBook',
+                                                    name:'添加图书',
+                                                    component:()=>import('./book/AddBook')
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            path: '/home',
+                                            name: '用户',
+                                            class:'el-icon-user',
+                                            component: ()=>import('./Home'),
+                                            show:true,
+                                            children:[
+                                                {
+                                                    path:'/userlist',
+                                                    name:'用户列表',
+                                                    component:()=>import('./user/UserList')
+                                                },
+                                                {
+                                                    path:'/addUser',
+                                                    name:'添加用户',
+                                                    component:()=>import('./user/AddUser')
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            path: '/home',
+                                            name: '日志',
+                                            class:'el-icon-document',
+                                            component: ()=>import('./Home'),
+                                            show:true,
+                                            children:[
+                                                {
+                                                    path:'/borrow',
+                                                    name:'借阅日志',
+                                                    component:()=>import('./borrow/Borrow')
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                } else if (resp.data.role ==='user'){
+                                    routers = [
+                                        {
+                                            path: '/home',
+                                            name: '图书',
+                                            show:true,
+                                            class:'el-icon-notebook-2',
+                                            component: ()=>import('./Home'),
+                                            children:[
+                                                {
+                                                    path:'/booklist',
+                                                    name:'图书列表',
+                                                    component:()=>import('./book/BookList')
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            path: '/home',
+                                            name: '日志',
+                                            class:'el-icon-document',
+                                            component: ()=>import('./Home'),
+                                            show:true,
+                                            children:[
+                                                {
+                                                    path:'/borrow',
+                                                    name:'借阅日志',
+                                                    component:()=>import('./borrow/Borrow')
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                                console.log(routers)
+                                this.$router.addRoutes(routers)
+                                this.$router.options.routes = routers
+                                this.$store.state.username = resp.data.username
+                                this.$store.state.role = resp.data.role
                                 let path = this.$route.query.redirect;
                                 this.$router.replace((path === '/' || path === undefined) ? '/home' : path);
                             }else{
