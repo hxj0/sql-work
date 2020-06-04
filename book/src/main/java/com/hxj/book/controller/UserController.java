@@ -125,7 +125,7 @@ public class UserController {
     @DeleteMapping("/delete/{userId}")
     public R deleteUserById(HttpSession session, @PathVariable("userId") Integer userId){
         String role = (String) session.getAttribute("user_role");
-        if(!"root".equals(role)){
+        if("user".equals(role)){
             return R.fail("没有删除权限！");
         }
         userService.removeById(userId);

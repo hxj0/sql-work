@@ -16,10 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <p>
@@ -81,6 +78,20 @@ public class BookController {
         bookService.removeById(id);
         return R.ok("删除成功！").setMsg("删除成功！");
     }
+
+    @DeleteMapping("/delete/all")
+    public R deleteBookById(@RequestParam List<Integer> ids){
+//    System.out.println(ids);
+        Collection<Book> books = bookService.listByIds(ids);
+        for(Book book : books){
+            File file = new File(new File("").getAbsolutePath() + book.getCover());
+            file.delete();
+            System.out.println(book.getCover());
+            bookService.removeById(book.getId());
+        }
+        return R.ok("删除成功！").setMsg("删除成功！");
+    }
+
 
     @PutMapping("/add")
     public R addBook(@RequestBody Book book){

@@ -29,6 +29,13 @@
         </el-dialog>
         <el-form :inline="true">
             <el-form-item>
+                <el-button type="danger" style="margin-left: -500px"
+                           icon="el-icon-delete-solid"
+                           v-if="$store.state.role!=='user'"
+                           @click="deleteAllSelected"
+                >批量删除</el-button>
+            </el-form-item>
+            <el-form-item>
                 <el-input v-model="search" placeholder="按名称或者作者搜索..."/>
             </el-form-item>
 
@@ -41,11 +48,17 @@
             <el-button type="default" @click="resetData()">清空</el-button>
         </el-form>
         <el-table
+                ref="multipleTable"
                 :header-cell-style="thStyleFun"
                 :cell-style="cellStyleFun"
                 :data="tableData"
                 :default-sort = "{prop: 'price', order: ''}"
-                style="width: 100%">
+                style="width: 100%"
+                @selection-change="handleSelectionChange">
+            <el-table-column
+                    type="selection"
+                    width="55">
+            </el-table-column>
             <el-table-column
                     label="名称"
                     prop="name">
@@ -154,6 +167,7 @@
                 bookId:'',
                 typeId:'',
                 categorys:'',
+                multipleSelection: []
             }
         },
         methods: {
@@ -228,6 +242,30 @@
                 }).catch(() => {
                     this.$message.info("取消删除!");
                 })
+            },
+            deleteAllSelected() {
+                this.$confirm('此操作将删除所有选中图书,是否继续？', '警告', {
+                    cancelButtonText: '取消',
+                    confirmButtonText: '确定'
+                }).then(() => {
+                    let ids = []
+                    this.multipleSelection.forEach(row=>{
+                        ids.push(row.id)
+                    })
+                    console.log(ids)
+                    this.$axios.delete("/book/delete/all?ids="+ids).then(res=>{
+                        this.page = 1
+                        this.init()
+                    }).catch(e=>{
+                        console.log(e);
+                    })
+                }).catch(() => {
+                    this.$message.info("取消删除!");
+                })
+            },
+            handleSelectionChange(val) {
+                console.log(val);
+                this.multipleSelection = val;
             }
         },
     }

@@ -6,4 +6,4 @@ book/.gitignore
 book-vue/dist
 book-vue/node_modules
 book-vue/.git
-
+*.jar
